@@ -1,20 +1,18 @@
 version: '3.5'
 services:
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:v2.45.0
+  vmagent:
+    container_name: vmagent
+    image: victoriametrics/vmagent:v1.91.3
     depends_on:
       - "vminsert"
     ports:
-      - 9090:9090
+      - 8429:8429
     volumes:
-      - prometheusdata:/prometheusdata
+      - vmagentdata:/vmagentdata
       - ./prometheus-cluster.yml:/etc/prometheus/prometheus.yml
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--promscrape.config=/etc/prometheus/prometheus.yml'
+      - '--remoteWrite.url=http://vminsert:8480/insert/0/prometheus/'
     restart: always
 
   grafana:
@@ -118,7 +116,7 @@ services:
     restart: always
 
 volumes:
-  prometheusdata: {}
+  vmagentdata: {}
   strgdata-1: {}
   strgdata-2: {}
   grafanadata: {}
