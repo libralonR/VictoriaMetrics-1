@@ -16,25 +16,6 @@ services:
     networks:
       - vm_net
     restart: always
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:v2.45.0
-    depends_on:
-      - "victoriametrics"
-    ports:
-      - 9090:9090
-    volumes:
-      - prometheusdata:/prometheusdata
-      - ./prometheus-cluster.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-    networks:
-      - vm_net
-    restart: always
-
   victoriametrics:
     container_name: victoriametrics
     image: victoriametrics/victoria-metrics:v1.91.3
@@ -72,7 +53,7 @@ services:
       - ./../../dashboards/vmalert.json:/var/lib/grafana/dashboards/vmalert.json
     networks:
       - vm_net
-    restart: always    
+    restart: always
   vmalert:
     container_name: vmalert
     image: victoriametrics/vmalert:v1.91.3
@@ -113,7 +94,6 @@ services:
     restart: always
 volumes:
   vmagentdata: {}
-  prometheusdata: {}
   vmdata: {}
   grafanadata: {}
 networks:
